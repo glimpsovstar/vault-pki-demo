@@ -25,6 +25,11 @@ bin/
 # Sensitive Terraform variable files
 terraform.auto.tfvars
 
+# Environment files with secrets
+.env
+.env.local
+.env.production
+
 # IDE
 .vscode/
 .idea/

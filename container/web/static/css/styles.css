@@ -1,0 +1,181 @@
+/* Terminal Styles */
+.terminal-container {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    font-family: 'Courier New', monospace;
+    min-height: 500px;
+    padding: 15px;
+    border-radius: 0 0 8px 8px;
+    overflow-y: auto;
+}
+
+.xterm {
+    background-color: #1e1e1e !important;
+    color: #ffffff !important;
+}
+
+.xterm-viewport {
+    background-color: #1e1e1e !important;
+}
+
+.xterm-screen {
+    background-color: #1e1e1e !important;
+}
+
+/* Custom Button Styles */
+.execute-step {
+    text-align: left;
+    font-size: 0.85rem;
+    padding: 8px 12px;
+}
+
+.execute-step:hover {
+    transform: translateX(2px);
+    transition: transform 0.2s ease;
+}
+
+.execute-step i {
+    color: #28a745;
+}
+
+/* Status Badge */
+#connection-status {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+/* Card Enhancements */
+.card-header {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    color: white;
+    border-bottom: none;
+}
+
+.card-header h5, .card-header h6 {
+    margin: 0;
+    font-weight: 500;
+}
+
+/* Tab Enhancements */
+.nav-tabs .nav-link {
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-weight: 500;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: transparent;
+    border-bottom-color: #007bff;
+    color: #007bff;
+}
+
+.nav-tabs .nav-link:hover {
+    border-bottom-color: #6c757d;
+    background-color: transparent;
+}
+
+/* Diagram Navigation */
+.diagram-nav {
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.diagram-nav.active {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Diagram Container */
+#diagram-container {
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.diagram-svg {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Terminal Status Indicators */
+.terminal-status .badge {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .col-md-4, .col-md-8 {
+        margin-bottom: 20px;
+    }
+    
+    .terminal-container {
+        min-height: 300px;
+    }
+    
+    .execute-step {
+        font-size: 0.8rem;
+        padding: 6px 10px;
+    }
+}
+
+/* Scroll Improvements */
+.card-body {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.list-group-flush {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #007bff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Alert Customization */
+.alert-info {
+    border-left: 4px solid #17a2b8;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+}
+
+/* Button Group Spacing */
+.d-grid.gap-2 > .btn {
+    margin-bottom: 0.5rem;
+}
+
+.d-grid.gap-2 > .btn:last-child {
+    margin-bottom: 0;
+}

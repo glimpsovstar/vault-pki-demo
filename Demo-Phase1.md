@@ -4,13 +4,15 @@ This phase demonstrates the complete PKI certificate lifecycle using Vault's CLI
 
 ## Overview
 
-Phase 1 covers the foundational PKI operations:
+Phase 1 covers the foundational PKI operations with a pedagogically structured approach:
 - Root CA verification (created via Terraform)
-- Certificate issuance (both direct and CSR-based)
+- Certificate issuance using **both traditional CSR workflow and Vault's simplified approach**
 - Certificate inspection and validation
 - Certificate renewal/re-issuance
 - Certificate revocation
 - Certificate Revocation List (CRL) management
+
+**Educational Flow:** The demo is structured to first show the traditional CSR-based certificate workflow (step 1.4), then demonstrate Vault's streamlined approach (step 1.5). This helps users understand both the standard PKI process and Vault's enhancements.
 
 ## Prerequisites
 
@@ -64,77 +66,7 @@ Before running this demo, ensure you have:
   - Key type and size are specified (RSA 2048-bit)
   - Role enforces security best practices
 
-### 1.4 Issue a Certificate
-- **Purpose:** Issues a new certificate using Vault's simplified flow
-- **Key Highlights:**
-  - Vault generates both private key and certificate in one step
-  - Certificate includes full chain (certificate + CA)
-  - Serial number is automatically assigned
-  - Certificate is stored in Vault for tracking
-  - **Note:** Vault generates both CSR and certificate internally for this flow
-
-### 1.5 Show Certificate Details and Expiration
-- **Purpose:** Extracts and displays certificate information using OpenSSL
-- **Key Highlights:**
-  - Certificate serial number for tracking and revocation
-  - Subject information matches requested CN
-  - Expiration date confirms TTL setting
-  - Certificate format is standard X.509
-
-### 1.6 List Existing Certificates
-- **Purpose:** Shows all certificates in the PKI store
-- **Key Highlights:**
-  - Both issued certificates and the root CA are listed
-  - Serial numbers are shown for identification
-  - Demonstrates certificate tracking capability
-
-### 1.7 Verify Certificate Chain
-- **Purpose:** Validates the certificate's issuer and chain of trust
-- **Key Highlights:**
-  - Issued certificate shows correct issuer (Demo Root CA)
-  - Root CA subject matches the issuer field
-  - Chain of trust is properly established
-  - Certificate validation would succeed
-
-### 1.8 Certificate Renewal (Re-issuance)
-- **Purpose:** Issues a new certificate for the same Common Name (renewal process)
-- **Key Highlights:**
-  - Same CN can have multiple valid certificates
-  - New certificate gets different serial number
-  - Old certificate remains valid until revoked or expired
-  - Demonstrates zero-downtime renewal capability
-
-### 1.9 Show New Certificate Details
-- **Purpose:** Displays details of the renewed certificate
-- **Key Highlights:**
-  - New serial number confirms this is a different certificate
-  - Same subject but different validity period
-  - Both certificates are now valid for the same CN
-
-### 1.10 Check Revocation Status BEFORE Revoke
-- **Purpose:** Shows certificate status before revocation
-- **Key Highlights:**
-  - `revocation_time` shows `0` (not revoked)
-  - `revocation_time_rfc3339` shows `n/a` (clean state)
-  - Certificate is currently valid and trusted
-
-### 1.11 Revoke Certificate
-- **Purpose:** Revokes the first certificate
-- **Key Highlights:**
-  - Revocation is immediate and irreversible
-  - Revocation time is recorded (Unix timestamp)
-  - Certificate is added to the CRL automatically
-  - Demonstrates lifecycle management capability
-
-### 1.12 Check Revocation Status AFTER Revoke
-- **Purpose:** Shows certificate status after revocation
-- **Key Highlights:**
-  - `revocation_time` now shows Unix timestamp
-  - `revocation_time_rfc3339` shows human-readable format
-  - `state` field shows `revoked`
-  - Certificate is now untrusted
-
-### 1.13 Generate CSR and Sign with Vault (Optional)
+### 1.4 Generate CSR and Sign (Traditional Flow)
 - **Purpose:** Demonstrates traditional CSR-based certificate flow
 - **Key Highlights:**
   - Shows manual private key generation with OpenSSL
@@ -142,6 +74,78 @@ Before running this demo, ensure you have:
   - Vault signs the CSR using the configured role
   - Demonstrates integration with existing PKI workflows
   - Private key never leaves the client system
+  - **Educational Value:** Shows the traditional way before the simplified approach
+
+### 1.5 Issue Certificate (Simplified Flow)
+- **Purpose:** Issues a new certificate using Vault's simplified flow
+- **Key Highlights:**
+  - Vault generates both private key and certificate in one step
+  - Certificate includes full chain (certificate + CA)
+  - Serial number is automatically assigned
+  - Certificate is stored in Vault for tracking
+  - **Note:** Vault generates both CSR and certificate internally for this flow
+  - **Educational Value:** Shows Vault's streamlined approach vs traditional CSR
+
+### 1.6 Show Certificate Details
+- **Purpose:** Extracts and displays certificate information using OpenSSL
+- **Key Highlights:**
+  - Certificate serial number for tracking and revocation
+  - Subject information matches requested CN
+  - Expiration date confirms TTL setting
+  - Certificate format is standard X.509
+
+### 1.7 List Existing Certificates
+- **Purpose:** Shows all certificates in the PKI store
+- **Key Highlights:**
+  - Both issued certificates and the root CA are listed
+  - Serial numbers are shown for identification
+  - Demonstrates certificate tracking capability
+
+### 1.8 Verify Certificate Chain
+- **Purpose:** Validates the certificate's issuer and chain of trust
+- **Key Highlights:**
+  - Issued certificate shows correct issuer (Demo Root CA)
+  - Root CA subject matches the issuer field
+  - Chain of trust is properly established
+  - Certificate validation would succeed
+
+### 1.9 Certificate Renewal
+- **Purpose:** Issues a new certificate for the same Common Name (renewal process)
+- **Key Highlights:**
+  - Same CN can have multiple valid certificates
+  - New certificate gets different serial number
+  - Old certificate remains valid until revoked or expired
+  - Demonstrates zero-downtime renewal capability
+
+### 1.10 Show New Certificate Details
+- **Purpose:** Displays details of the renewed certificate
+- **Key Highlights:**
+  - New serial number confirms this is a different certificate
+  - Same subject but different validity period
+  - Both certificates are now valid for the same CN
+
+### 1.11 Check Revocation Status (Before)
+- **Purpose:** Shows certificate status before revocation
+- **Key Highlights:**
+  - `revocation_time` shows `0` (not revoked)
+  - `revocation_time_rfc3339` shows `n/a` (clean state)
+  - Certificate is currently valid and trusted
+
+### 1.12 Revoke Certificate
+- **Purpose:** Revokes the first certificate
+- **Key Highlights:**
+  - Revocation is immediate and irreversible
+  - Revocation time is recorded (Unix timestamp)
+  - Certificate is added to the CRL automatically
+  - Demonstrates lifecycle management capability
+
+### 1.13 Check Revocation Status (After)
+- **Purpose:** Shows certificate status after revocation
+- **Key Highlights:**
+  - `revocation_time` now shows Unix timestamp
+  - `revocation_time_rfc3339` shows human-readable format
+  - `state` field shows `revoked`
+  - Certificate is now untrusted
 
 ### 1.14 Certificate Revocation List (CRL)
 - **Purpose:** Displays the Certificate Revocation List with revoked certificates

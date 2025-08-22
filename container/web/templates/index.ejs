@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vault PKI Demo - Interactive Terminal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Header -->
+        <nav class="navbar navbar-dark bg-primary mb-4">
+            <div class="container-fluid">
+                <span class="navbar-brand mb-0 h1">
+                    <i class="fas fa-certificate me-2"></i>
+                    HashiCorp Vault PKI Demo
+                </span>
+                <small class="text-light">Interactive Certificate Lifecycle Management</small>
+            </div>
+        </nav>
+
+        <!-- Tab Navigation -->
+        <ul class="nav nav-tabs mb-4" id="demoTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="terminal-tab" data-bs-toggle="tab" data-bs-target="#terminal-pane" 
+                        type="button" role="tab">
+                    <i class="fas fa-terminal me-2"></i>Interactive Terminal
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="diagrams-tab" data-bs-toggle="tab" data-bs-target="#diagrams-pane" 
+                        type="button" role="tab">
+                    <i class="fas fa-project-diagram me-2"></i>PKI Lifecycle Diagrams
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="demoTabContent">
+            <!-- Terminal Tab -->
+            <div class="tab-pane fade show active" id="terminal-pane" role="tabpanel">
+                <div class="row">
+                    <!-- Command Buttons -->
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-list-ol me-2"></i>Demo Steps</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-2">
+                                    <% demoSteps.forEach((step, index) => { %>
+                                    <button type="button" class="btn btn-outline-primary btn-sm execute-step" 
+                                            data-step="<%= step.id %>" title="<%= step.description %>">
+                                        <i class="fas fa-play me-2"></i><%= step.title %>
+                                    </button>
+                                    <% }); %>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Terminal Controls -->
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h6><i class="fas fa-cogs me-2"></i>Terminal Controls</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-2">
+                                    <button type="button" class="btn btn-warning btn-sm" id="clear-terminal">
+                                        <i class="fas fa-broom me-2"></i>Clear Terminal
+                                    </button>
+                                    <button type="button" class="btn btn-info btn-sm" id="show-env">
+                                        <i class="fas fa-env me-2"></i>Show Environment
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Terminal Output -->
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5><i class="fas fa-terminal me-2"></i>Terminal Output</h5>
+                                <div class="terminal-status">
+                                    <span class="badge bg-success" id="connection-status">Connected</span>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <div id="terminal" class="terminal-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diagrams Tab -->
+            <div class="tab-pane fade" id="diagrams-pane" role="tabpanel">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>PKI Lifecycle Overview:</strong> 
+                            This section provides visual representations of each step in the certificate lifecycle.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <!-- Diagram Navigation -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h6><i class="fas fa-sitemap me-2"></i>Diagram Steps</h6>
+                            </div>
+                            <div class="list-group list-group-flush">
+                                <% demoSteps.forEach((step, index) => { %>
+                                <button type="button" class="list-group-item list-group-item-action diagram-nav" 
+                                        data-diagram="<%= step.diagram %>">
+                                    <%= step.title %>
+                                </button>
+                                <% }); %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-9">
+                        <!-- Diagram Display -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-eye me-2"></i>PKI Process Diagram</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="diagram-container" class="text-center">
+                                    <p class="text-muted">Select a step from the left to view the corresponding diagram.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" />
+    <script src="/js/terminal.js"></script>
+    <script src="/js/diagrams.js"></script>
+</body>
+</html>

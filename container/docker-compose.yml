@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  vault-pki-demo:
+    build: .
+    ports:
+      - "3020:3020"
+    environment:
+      # These should be set via .env file or environment variables
+      - VAULT_ADDR=${VAULT_ADDR}
+      - VAULT_TOKEN=${VAULT_TOKEN}
+      - VAULT_NAMESPACE=${VAULT_NAMESPACE}
+      - PORT=3020
+    volumes:
+      # Optional: Mount volume for persistent data
+      - ./data:/app/data
+    restart: unless-stopped
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3020"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+networks:
+  default:
+    name: vault-pki-demo-network
