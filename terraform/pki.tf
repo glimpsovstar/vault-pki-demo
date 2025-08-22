@@ -17,8 +17,8 @@ resource "vault_pki_secret_backend_root_cert" "root" {
 # Set issuing certs/CRL URLs so revocation is demonstrable
 resource "vault_pki_secret_backend_config_urls" "urls" {
   backend                 = vault_mount.pki.path
-  issuing_certificates    = "${var.vault_addr}/v1/${vault_mount.pki.path}/ca"
-  crl_distribution_points = "${var.vault_addr}/v1/${vault_mount.pki.path}/crl"
+  issuing_certificates    = ["${var.vault_addr}/v1/${vault_mount.pki.path}/ca"]
+  crl_distribution_points = ["${var.vault_addr}/v1/${vault_mount.pki.path}/crl"]
 }
 
 # Role for issuing leaf certs
