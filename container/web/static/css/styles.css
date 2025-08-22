@@ -1,4 +1,4 @@
-/* HashiCorp Vault Color Scheme */
+/* HashiCorp Vault Color Scheme - Limited Application */
 :root {
     --vault-yellow: #FFD814;
     --vault-yellow-dark: #FFBB14;
@@ -12,10 +12,10 @@
     --info-blue: #2472c8;
 }
 
-/* Terminal Styles */
+/* Terminal Styles - Back to Original */
 .terminal-container {
-    background-color: var(--vault-black);
-    color: var(--vault-white);
+    background-color: #1e1e1e;
+    color: #ffffff;
     font-family: 'Courier New', monospace;
     min-height: 500px;
     padding: 15px;
@@ -24,71 +24,35 @@
 }
 
 .xterm {
-    background-color: var(--vault-black) !important;
-    color: var(--vault-white) !important;
+    background-color: #1e1e1e !important;
+    color: #ffffff !important;
 }
 
 .xterm-viewport {
-    background-color: var(--vault-black) !important;
+    background-color: #1e1e1e !important;
 }
 
 .xterm-screen {
-    background-color: var(--vault-black) !important;
+    background-color: #1e1e1e !important;
 }
 
-/* Custom Button Styles */
+/* Custom Button Styles - Back to Original */
 .execute-step {
     text-align: left;
     font-size: 0.85rem;
     padding: 8px 12px;
-    border: 1px solid var(--vault-yellow);
-    color: var(--vault-black);
 }
 
 .execute-step:hover {
     transform: translateX(2px);
     transition: transform 0.2s ease;
-    background-color: var(--vault-yellow);
-    border-color: var(--vault-yellow-dark);
-    color: var(--vault-black);
 }
 
 .execute-step i {
-    color: var(--vault-yellow-dark);
+    color: #28a745;
 }
 
-.execute-step:hover i {
-    color: var(--vault-black);
-}
-
-/* Primary buttons with Vault yellow */
-.btn-primary {
-    background-color: var(--vault-yellow);
-    border-color: var(--vault-yellow);
-    color: var(--vault-black);
-    font-weight: 500;
-}
-
-.btn-primary:hover,
-.btn-primary:focus,
-.btn-primary:active {
-    background-color: var(--vault-yellow-dark);
-    border-color: var(--vault-yellow-dark);
-    color: var(--vault-black);
-}
-
-.btn-outline-primary {
-    border-color: var(--vault-yellow);
-    color: var(--vault-yellow-dark);
-}
-
-.btn-outline-primary:hover,
-.btn-outline-primary:focus,
-.btn-outline-primary:active {
-    background-color: var(--vault-yellow);
-    border-color: var(--vault-yellow);
-    color: var(--vault-black);
-}
+/* Keep original Bootstrap button colors */
 
 /* Status Badge */
 #connection-status {
@@ -101,33 +65,35 @@
     100% { opacity: 1; }
 }
 
-/* Card Enhancements */
+/* Card Enhancements - Back to Original */
 .card-header {
-    background: linear-gradient(135deg, var(--vault-yellow), var(--vault-yellow-dark));
-    color: var(--vault-black);
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    color: white;
     border-bottom: none;
-    font-weight: 600;
 }
 
 .card-header h5, .card-header h6 {
     margin: 0;
-    font-weight: 600;
-    color: var(--vault-black);
+    font-weight: 500;
 }
 
-/* Navbar with Vault branding */
+/* Navbar with ONLY Vault branding for header */
 .navbar-dark.bg-primary {
-    background: linear-gradient(135deg, var(--vault-black), var(--vault-gray)) !important;
-    border-bottom: 3px solid var(--vault-yellow);
+    background: linear-gradient(135deg, var(--vault-yellow), var(--vault-yellow-dark)) !important;
+    border-bottom: none;
 }
 
 .navbar-brand {
-    color: var(--vault-white) !important;
+    color: var(--vault-black) !important;
     font-weight: 600;
 }
 
 .navbar-brand:hover {
-    color: var(--vault-yellow) !important;
+    color: var(--vault-black) !important;
+}
+
+.navbar .text-light {
+    color: var(--vault-black) !important;
 }
 
 /* Vault logo styling */
@@ -137,56 +103,44 @@
     margin-right: 10px;
 }
 
-/* Tab Enhancements */
+/* Tab Enhancements - Back to Original */
 .nav-tabs .nav-link {
     border: none;
     border-bottom: 3px solid transparent;
     font-weight: 500;
-    color: var(--vault-gray);
 }
 
 .nav-tabs .nav-link.active {
     background-color: transparent;
-    border-bottom-color: var(--vault-yellow);
-    color: var(--vault-black);
-    font-weight: 600;
+    border-bottom-color: #007bff;
+    color: #007bff;
 }
 
 .nav-tabs .nav-link:hover {
-    border-bottom-color: var(--vault-yellow-light);
+    border-bottom-color: #6c757d;
     background-color: transparent;
-    color: var(--vault-black);
 }
 
-/* Diagram Navigation */
+/* Diagram Navigation - Back to Original */
 .diagram-nav {
     cursor: pointer;
     font-size: 0.9rem;
-    border-left: 3px solid transparent;
 }
 
 .diagram-nav.active {
-    background-color: var(--vault-yellow);
-    color: var(--vault-black);
-    border-left-color: var(--vault-yellow-dark);
+    background-color: #007bff;
+    color: white;
 }
 
-.diagram-nav:hover {
-    background-color: var(--vault-yellow-light);
-    color: var(--vault-black);
-    border-left-color: var(--vault-yellow);
-}
-
-/* Diagram Container */
+/* Diagram Container - Back to Original */
 #diagram-container {
     min-height: 400px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--vault-gray-light);
+    background-color: #f8f9fa;
     border-radius: 8px;
     padding: 20px;
-    border: 2px solid var(--vault-yellow-light);
 }
 
 .diagram-svg {
@@ -227,34 +181,33 @@
     overflow-y: auto;
 }
 
-/* Terminal control buttons */
-.btn-warning {
-    background-color: var(--vault-yellow);
-    border-color: var(--vault-yellow);
-    color: var(--vault-black);
-    font-weight: 500;
+/* Remove the yellow button overrides */
+
+/* Alert Customization - Back to Original */
+.alert-info {
+    border-left: 4px solid #17a2b8;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
 }
 
-.btn-warning:hover,
-.btn-warning:focus,
-.btn-warning:active {
-    background-color: var(--vault-yellow-dark);
-    border-color: var(--vault-yellow-dark);
-    color: var(--vault-black);
+/* Loading indicator - Back to Original */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
 }
 
-.btn-info {
-    background-color: var(--info-blue);
-    border-color: var(--info-blue);
-    color: white;
-}
-
-.btn-info:hover,
-.btn-info:focus,
-.btn-info:active {
-    background-color: #1e5a96;
-    border-color: #1e5a96;
-    color: white;
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #007bff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
 }
 
 /* Status badges */

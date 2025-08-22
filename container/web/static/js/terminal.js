@@ -3,30 +3,30 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize Socket.IO connection
     const socket = io();
     
-    // Initialize xterm.js terminal with Vault color scheme
+    // Initialize xterm.js terminal - Back to original colors
     const terminal = new Terminal({
         cursorBlink: true,
         theme: {
-            background: '#000000',    // Vault black
-            foreground: '#ffffff',    // White text
-            cursor: '#FFD814',        // Vault yellow cursor
-            selection: '#FFD814',     // Vault yellow selection
+            background: '#1e1e1e',
+            foreground: '#ffffff',
+            cursor: '#ffffff',
+            selection: '#3366cc',
             black: '#000000',
             red: '#cd3131',
-            green: '#0dbc79',         // Keep success green
-            yellow: '#FFD814',        // Vault yellow
+            green: '#0dbc79',
+            yellow: '#e5e510',
             blue: '#2472c8',
             magenta: '#bc3fbc',
             cyan: '#11a8cd',
-            white: '#ffffff',
-            brightBlack: '#6B6B73',   // Vault gray
+            white: '#e5e5e5',
+            brightBlack: '#666666',
             brightRed: '#f14c4c',
             brightGreen: '#23d18b',
-            brightYellow: '#FFBB14',  // Vault dark yellow
+            brightYellow: '#f5f543',
             brightBlue: '#3b8eea',
             brightMagenta: '#d670d6',
             brightCyan: '#29b8db',
-            brightWhite: '#ffffff'
+            brightWhite: '#e5e5e5'
         },
         fontSize: 14,
         fontFamily: 'Monaco, Menlo, "Ubuntu Mono", monospace',
@@ -113,12 +113,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100);
     });
     
-    // Welcome message with Vault colors
+    // Welcome message - Back to original colors
     setTimeout(() => {
         terminal.write('\r\n');
-        terminal.write('\x1b[33m=== Welcome to HashiCorp Vault PKI Demo ===\x1b[0m\r\n');  // Vault yellow
+        terminal.write('\x1b[32m=== Welcome to HashiCorp Vault PKI Demo ===\x1b[0m\r\n');
         terminal.write('\x1b[36mClick the demo steps on the left to execute PKI operations\x1b[0m\r\n');
-        terminal.write('\x1b[33mTip: You can also type commands directly in this terminal\x1b[0m\r\n');  // Vault yellow
+        terminal.write('\x1b[33mTip: You can also type commands directly in this terminal\x1b[0m\r\n');
         terminal.write('\r\n$ ');
     }, 500);
 });
