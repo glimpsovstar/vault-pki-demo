@@ -192,11 +192,11 @@ io.on('connection', (socket) => {
       // Send clear screen command first
       terminal.write('\x0c');
       
-      // Display header and description directly to client (not as commands)
+      // Display header and description directly to client with Vault colors
       setTimeout(() => {
-        const headerText = `\x1b[32m=== ${step.title} ===\x1b[0m\r\n`;
-        const descText = `\x1b[36m${step.description}\x1b[0m\r\n\r\n`;
-        const promptText = `$ ${step.command}\r\n`;
+        const headerText = `\x1b[33m=== ${step.title} ===\x1b[0m\r\n`;  // Vault yellow
+        const descText = `\x1b[37m${step.description}\x1b[0m\r\n\r\n`;   // White text
+        const promptText = `\x1b[33m$ \x1b[37m${step.command}\x1b[0m\r\n`;  // Yellow prompt, white command
         
         // Send display text directly to terminal output
         socket.emit('terminal-output', headerText);

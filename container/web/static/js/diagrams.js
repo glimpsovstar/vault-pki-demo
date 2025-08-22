@@ -9,21 +9,21 @@ document.addEventListener('DOMContentLoaded', function() {
             title: 'Token Verification',
             svg: `
                 <svg width="400" height="200" viewBox="0 0 400 200" class="diagram-svg">
-                    <rect x="50" y="50" width="100" height="60" fill="#007bff" rx="5"/>
-                    <text x="100" y="85" text-anchor="middle" fill="white" font-family="Arial" font-size="12">Client</text>
+                    <rect x="50" y="50" width="100" height="60" fill="#FFD814" rx="5"/>
+                    <text x="100" y="85" text-anchor="middle" fill="black" font-family="Arial" font-size="12" font-weight="600">Client</text>
                     
-                    <rect x="250" y="50" width="100" height="60" fill="#28a745" rx="5"/>
-                    <text x="300" y="85" text-anchor="middle" fill="white" font-family="Arial" font-size="12">Vault Server</text>
+                    <rect x="250" y="50" width="100" height="60" fill="#000000" rx="5"/>
+                    <text x="300" y="85" text-anchor="middle" fill="#FFD814" font-family="Arial" font-size="12" font-weight="600">Vault Server</text>
                     
-                    <path d="M 150 70 L 240 70" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowhead)"/>
-                    <text x="195" y="65" text-anchor="middle" fill="#6c757d" font-family="Arial" font-size="10">Token Lookup</text>
+                    <path d="M 150 70 L 240 70" stroke="#6B6B73" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="195" y="65" text-anchor="middle" fill="#6B6B73" font-family="Arial" font-size="10">Token Lookup</text>
                     
-                    <path d="M 240 90 L 150 90" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowhead)"/>
-                    <text x="195" y="105" text-anchor="middle" fill="#6c757d" font-family="Arial" font-size="10">Token Details</text>
+                    <path d="M 240 90 L 150 90" stroke="#6B6B73" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="195" y="105" text-anchor="middle" fill="#6B6B73" font-family="Arial" font-size="10">Token Details</text>
                     
                     <defs>
                         <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                            <polygon points="0 0, 10 3.5, 0 7" fill="#6c757d"/>
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#6B6B73"/>
                         </marker>
                     </defs>
                 </svg>
@@ -35,17 +35,17 @@ document.addEventListener('DOMContentLoaded', function() {
             title: 'PKI Mount Configuration',
             svg: `
                 <svg width="400" height="250" viewBox="0 0 400 250" class="diagram-svg">
-                    <rect x="50" y="50" width="300" height="150" fill="none" stroke="#007bff" stroke-width="2" rx="10"/>
-                    <text x="200" y="40" text-anchor="middle" fill="#007bff" font-family="Arial" font-size="14" font-weight="bold">Vault Server</text>
+                    <rect x="50" y="50" width="300" height="150" fill="none" stroke="#FFD814" stroke-width="2" rx="10"/>
+                    <text x="200" y="40" text-anchor="middle" fill="#000000" font-family="Arial" font-size="14" font-weight="bold">Vault Server</text>
                     
-                    <rect x="80" y="80" width="100" height="40" fill="#ffc107" rx="5"/>
-                    <text x="130" y="105" text-anchor="middle" fill="white" font-family="Arial" font-size="11">PKI Engine</text>
+                    <rect x="80" y="80" width="100" height="40" fill="#FFBB14" rx="5"/>
+                    <text x="130" y="105" text-anchor="middle" fill="black" font-family="Arial" font-size="11" font-weight="600">PKI Engine</text>
                     
-                    <rect x="220" y="80" width="100" height="40" fill="#17a2b8" rx="5"/>
-                    <text x="270" y="105" text-anchor="middle" fill="white" font-family="Arial" font-size="11">Mount: pki-demo</text>
+                    <rect x="220" y="80" width="100" height="40" fill="#000000" rx="5"/>
+                    <text x="270" y="105" text-anchor="middle" fill="#FFD814" font-family="Arial" font-size="11" font-weight="600">Mount: pki-demo</text>
                     
-                    <rect x="150" y="140" width="100" height="40" fill="#28a745" rx="5"/>
-                    <text x="200" y="165" text-anchor="middle" fill="white" font-family="Arial" font-size="11">Root CA</text>
+                    <rect x="150" y="140" width="100" height="40" fill="#6B6B73" rx="5"/>
+                    <text x="200" y="165" text-anchor="middle" fill="white" font-family="Arial" font-size="11" font-weight="600">Root CA</text>
                 </svg>
             `,
             description: 'Display the PKI secrets engine mount point and configuration.'

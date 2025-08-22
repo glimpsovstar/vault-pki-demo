@@ -1,7 +1,21 @@
+/* HashiCorp Vault Color Scheme */
+:root {
+    --vault-yellow: #FFD814;
+    --vault-yellow-dark: #FFBB14;
+    --vault-yellow-light: #FFF4B8;
+    --vault-black: #000000;
+    --vault-gray: #6B6B73;
+    --vault-gray-light: #F5F5F7;
+    --vault-white: #FFFFFF;
+    --success-green: #0dbc79;
+    --danger-red: #cd3131;
+    --info-blue: #2472c8;
+}
+
 /* Terminal Styles */
 .terminal-container {
-    background-color: #1e1e1e;
-    color: #ffffff;
+    background-color: var(--vault-black);
+    color: var(--vault-white);
     font-family: 'Courier New', monospace;
     min-height: 500px;
     padding: 15px;
@@ -10,16 +24,16 @@
 }
 
 .xterm {
-    background-color: #1e1e1e !important;
-    color: #ffffff !important;
+    background-color: var(--vault-black) !important;
+    color: var(--vault-white) !important;
 }
 
 .xterm-viewport {
-    background-color: #1e1e1e !important;
+    background-color: var(--vault-black) !important;
 }
 
 .xterm-screen {
-    background-color: #1e1e1e !important;
+    background-color: var(--vault-black) !important;
 }
 
 /* Custom Button Styles */
@@ -27,15 +41,53 @@
     text-align: left;
     font-size: 0.85rem;
     padding: 8px 12px;
+    border: 1px solid var(--vault-yellow);
+    color: var(--vault-black);
 }
 
 .execute-step:hover {
     transform: translateX(2px);
     transition: transform 0.2s ease;
+    background-color: var(--vault-yellow);
+    border-color: var(--vault-yellow-dark);
+    color: var(--vault-black);
 }
 
 .execute-step i {
-    color: #28a745;
+    color: var(--vault-yellow-dark);
+}
+
+.execute-step:hover i {
+    color: var(--vault-black);
+}
+
+/* Primary buttons with Vault yellow */
+.btn-primary {
+    background-color: var(--vault-yellow);
+    border-color: var(--vault-yellow);
+    color: var(--vault-black);
+    font-weight: 500;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: var(--vault-yellow-dark);
+    border-color: var(--vault-yellow-dark);
+    color: var(--vault-black);
+}
+
+.btn-outline-primary {
+    border-color: var(--vault-yellow);
+    color: var(--vault-yellow-dark);
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+    background-color: var(--vault-yellow);
+    border-color: var(--vault-yellow);
+    color: var(--vault-black);
 }
 
 /* Status Badge */
@@ -51,14 +103,38 @@
 
 /* Card Enhancements */
 .card-header {
-    background: linear-gradient(45deg, #007bff, #0056b3);
-    color: white;
+    background: linear-gradient(135deg, var(--vault-yellow), var(--vault-yellow-dark));
+    color: var(--vault-black);
     border-bottom: none;
+    font-weight: 600;
 }
 
 .card-header h5, .card-header h6 {
     margin: 0;
-    font-weight: 500;
+    font-weight: 600;
+    color: var(--vault-black);
+}
+
+/* Navbar with Vault branding */
+.navbar-dark.bg-primary {
+    background: linear-gradient(135deg, var(--vault-black), var(--vault-gray)) !important;
+    border-bottom: 3px solid var(--vault-yellow);
+}
+
+.navbar-brand {
+    color: var(--vault-white) !important;
+    font-weight: 600;
+}
+
+.navbar-brand:hover {
+    color: var(--vault-yellow) !important;
+}
+
+/* Vault logo styling */
+.vault-logo {
+    height: 32px;
+    width: auto;
+    margin-right: 10px;
 }
 
 /* Tab Enhancements */
@@ -66,28 +142,39 @@
     border: none;
     border-bottom: 3px solid transparent;
     font-weight: 500;
+    color: var(--vault-gray);
 }
 
 .nav-tabs .nav-link.active {
     background-color: transparent;
-    border-bottom-color: #007bff;
-    color: #007bff;
+    border-bottom-color: var(--vault-yellow);
+    color: var(--vault-black);
+    font-weight: 600;
 }
 
 .nav-tabs .nav-link:hover {
-    border-bottom-color: #6c757d;
+    border-bottom-color: var(--vault-yellow-light);
     background-color: transparent;
+    color: var(--vault-black);
 }
 
 /* Diagram Navigation */
 .diagram-nav {
     cursor: pointer;
     font-size: 0.9rem;
+    border-left: 3px solid transparent;
 }
 
 .diagram-nav.active {
-    background-color: #007bff;
-    color: white;
+    background-color: var(--vault-yellow);
+    color: var(--vault-black);
+    border-left-color: var(--vault-yellow-dark);
+}
+
+.diagram-nav:hover {
+    background-color: var(--vault-yellow-light);
+    color: var(--vault-black);
+    border-left-color: var(--vault-yellow);
 }
 
 /* Diagram Container */
@@ -96,9 +183,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #f8f9fa;
+    background-color: var(--vault-gray-light);
     border-radius: 8px;
     padding: 20px;
+    border: 2px solid var(--vault-yellow-light);
 }
 
 .diagram-svg {
@@ -139,6 +227,45 @@
     overflow-y: auto;
 }
 
+/* Terminal control buttons */
+.btn-warning {
+    background-color: var(--vault-yellow);
+    border-color: var(--vault-yellow);
+    color: var(--vault-black);
+    font-weight: 500;
+}
+
+.btn-warning:hover,
+.btn-warning:focus,
+.btn-warning:active {
+    background-color: var(--vault-yellow-dark);
+    border-color: var(--vault-yellow-dark);
+    color: var(--vault-black);
+}
+
+.btn-info {
+    background-color: var(--info-blue);
+    border-color: var(--info-blue);
+    color: white;
+}
+
+.btn-info:hover,
+.btn-info:focus,
+.btn-info:active {
+    background-color: #1e5a96;
+    border-color: #1e5a96;
+    color: white;
+}
+
+/* Status badges */
+.badge.bg-success {
+    background-color: var(--success-green) !important;
+}
+
+.badge.bg-danger {
+    background-color: var(--danger-red) !important;
+}
+
 /* Loading States */
 .loading {
     opacity: 0.7;
@@ -166,9 +293,25 @@
 
 /* Alert Customization */
 .alert-info {
-    border-left: 4px solid #17a2b8;
-    background-color: #d1ecf1;
-    border-color: #bee5eb;
+    border-left: 4px solid var(--vault-yellow);
+    background-color: var(--vault-yellow-light);
+    border-color: var(--vault-yellow);
+    color: var(--vault-black);
+}
+
+/* Loading indicator with Vault colors */
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid var(--vault-yellow);
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
 }
 
 /* Button Group Spacing */
