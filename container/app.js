@@ -73,13 +73,6 @@ const demoSteps = [
     diagram: 'certificate-details'
   },
   {
-    id: 'step1_6',
-    title: '1.6 Show Certificate Details',
-    description: 'Extract and display certificate information',
-    command: 'SERIAL1=$(jq -r \'.data.serial_number\' /tmp/pki-cert-1.json); echo "Certificate Serial: $SERIAL1"; jq -r \'.data.certificate\' /tmp/pki-cert-1.json | openssl x509 -text -noout | head -20',
-    diagram: 'certificate-details'
-  },
-  {
     id: 'step1_7',
     title: '1.7 List Existing Certificates',
     description: 'Show all certificates in the PKI store',
@@ -105,14 +98,14 @@ const demoSteps = [
     title: '1.10 Show New Certificate Details',
     description: 'Display details of the renewed certificate',
     command: 'SERIAL2=$(jq -r \'.data.serial_number\' /tmp/pki-cert-2.json); vault read pki-demo/cert/$SERIAL2',
-    diagram: 'new-certificate'
+    diagram: 'certificate-details'
   },
   {
     id: 'step1_11',
     title: '1.11 Check Revocation Status (Before)',
     description: 'Show certificate status before revocation',
     command: 'SERIAL1=$(jq -r \'.data.serial_number\' /tmp/pki-cert-1.json); vault read pki-demo/cert/$SERIAL1 | grep -E \'(revocation_time|state)\'',
-    diagram: 'revocation-before'
+    diagram: 'certificate-list'
   },
   {
     id: 'step1_12',
@@ -126,7 +119,7 @@ const demoSteps = [
     title: '1.13 Check Revocation Status (After)',
     description: 'Show certificate status after revocation',
     command: 'SERIAL1=$(jq -r \'.data.serial_number\' /tmp/pki-cert-1.json); vault read pki-demo/cert/$SERIAL1 | grep -E \'(revocation_time|state)\'',
-    diagram: 'revocation-after'
+    diagram: 'certificate-list'
   },
   {
     id: 'step1_14',
