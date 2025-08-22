@@ -32,6 +32,12 @@ p() {
   printf "%b\n" "$*"
 }
 
+# Clear screen and print section header
+section() {
+  clear
+  printf "\n${GREEN}=== %s ===${COLOR_RESET}\n\n" "$*"
+}
+
 # Print command with prompt, then execute (capturing stdout/stderr)
 pe() {
   local cmd="$*"
