@@ -1,0 +1,10 @@
+vault_addr        = "https://<your-hcp-vault-public-url>:8200"
+vault_token       = "<paste-an-admin-or-sufficient-token>"
+vault_namespace   = "admin"
+vault_engine_name = "pki-demo"
+
+# Optional tweaks
+common_domain     = "demo.local"
+pki_role_name     = "demo"
+ca_max_ttl_h      = 8760
+cert_max_ttl_h    = 72

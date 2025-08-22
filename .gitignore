@@ -22,6 +22,8 @@ bin/
 .crash
 .terraform/
 .terraform.lock.hcl
+# Sensitive Terraform variable files
+terraform.auto.tfvars
 
 # IDE
 .vscode/
