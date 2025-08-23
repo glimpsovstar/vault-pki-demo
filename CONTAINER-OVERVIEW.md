@@ -1,29 +1,37 @@
-# 🚀 Vault PKI Demo Container - Complete Setup
+# 🚀 Vault PKI Demo Container - Enhanced Interactive System
 
 ## What We Built
 
-A fully containerized, interactive web interface for demonstrating HashiCorp Vault PKI certificate lifecycle management. The container provides:
+A comprehensive containerized web interface for demonstrating HashiCorp Vault PKI certificate lifecycle management with visual workflow comparisons and enhanced educational content.
 
 ### ✨ Key Features
 
 1. **🖥️ Interactive Terminal Tab**
    - Real-time terminal interaction using xterm.js and WebSockets
-   - 15 clickable demo steps covering complete PKI lifecycle
+   - 17 clickable demo steps covering complete PKI lifecycle
    - Direct command execution with live output
    - Terminal controls (clear, show environment)
 
-2. **📊 PKI Lifecycle Diagrams Tab**
-   - Visual SVG diagrams for each demo step
-   - Step-by-step process illustrations
+2. **📊 Enhanced PKI Lifecycle Diagrams Tab**
+   - **Workflow Comparison**: Traditional vs. HashiCorp Vault certificate management
+   - Visual SVG diagrams for each demo step (13 enterprise-style diagrams)
+   - Step-by-step process illustrations with organizational personas
    - Interactive navigation between diagrams
    - Detailed descriptions for each process
 
 3. **🔐 Complete PKI Operations**
-   - Certificate issuance (simplified and CSR-based flows)
+   - **Root CA creation process demonstration**
+   - **Dual certificate workflows**: Traditional CSR signing (`/sign`) and direct issuance (`/issue`)
    - Certificate renewal and revocation
    - Certificate chain verification
    - Certificate Revocation List (CRL) management
    - Cleanup and environment management
+
+4. **🎨 Visual Workflow Education**
+   - Side-by-side traditional vs. automated workflow comparison
+   - Enterprise personas and organizational roles
+   - Time comparison (Days/Weeks → Seconds/Minutes)
+   - Security considerations and use-case guidance
 
 ## 📁 File Structure
 
@@ -92,16 +100,39 @@ cp .env.example .env
 
 ## 🎯 Demo Steps Coverage
 
-The container implements all 15 steps from the Phase 1 CLI demo:
+The container implements all 17 enhanced steps from the improved CLI demo:
 
+### Phase 1: Foundation & Setup
 1. **Setup & Verification** - Token validation
-2. **PKI Infrastructure** - Mount, Root CA, Role display
-3. **Certificate Operations** - Issue, renew, list, verify
-4. **Revocation Management** - Revoke certificates, check CRL
-5. **Advanced Flows** - CSR-based certificate issuance
-6. **Cleanup** - Remove temporary artifacts
+2. **PKI Mount Configuration** - Display PKI secrets engine
+3. **Root CA Creation Process** - Show how Root CAs are created
+4. **Root CA Verification** - Prove Root CA exists with detailed examination
+5. **PKI Role Configuration** - Display role settings
+
+### Phase 2: Certificate Workflows
+6. **Workflow A: Traditional CSR Signing** - `/sign` endpoint with step-by-step process
+7. **Workflow B: Direct Certificate Issuance** - `/issue` endpoint with full automation
+8. **Workflow Comparison** - Side-by-side analysis of both approaches
+
+### Phase 3: Certificate Management
+9. **Certificate Details** - Extract and display certificate information
+10. **Certificate Listing** - Show all certificates in PKI store
+11. **Certificate Chain Verification** - Validate issuer and chain of trust
+12. **Certificate Renewal** - Issue new certificates for same CN
+13. **New Certificate Details** - Display renewed certificate information
+14. **Revocation Status (Before)** - Check certificate status
+15. **Certificate Revocation** - Revoke certificates
+16. **Revocation Status (After)** - Verify revocation
+17. **Certificate Revocation List** - Display CRL with revoked certificates
+18. **Cleanup** - Remove temporary artifacts
 
 ## 🔧 Advanced Features
+
+### Enhanced Workflow Visualization
+- **Traditional Workflow SVG**: Multi-team manual process with 6+ personas
+- **HashiCorp Vault Workflow SVG**: Streamlined API-driven automation
+- **Time Comparison**: Visual representation of efficiency gains
+- **Security Trade-offs**: Educational content about when to use each approach
 
 ### Real-time Terminal
 - Full terminal emulation with xterm.js
@@ -109,17 +140,19 @@ The container implements all 15 steps from the Phase 1 CLI demo:
 - Live output streaming
 - Direct command input capability
 
-### Visual Diagrams
-- 15 custom SVG diagrams showing PKI processes
+### Interactive Diagrams
+- 13 custom enterprise-style SVG diagrams showing PKI processes
+- Organizational personas (Security Admin, App Developer, Portal, DevOps, Network Team, Multiple Teams)
 - Interactive navigation between steps
-- Process flow illustrations
+- Process flow illustrations with business context
 - Detailed step descriptions
 
 ### Container Orchestration
-- Docker Compose with health checks
+- Docker Compose with health checks and port 3020
 - Resource limits and restart policies
 - Environment variable management
 - Volume mounting for persistent data
+- Cache-busting for updated content
 
 ## 🔐 Security Considerations
 
@@ -131,13 +164,16 @@ The container implements all 15 steps from the Phase 1 CLI demo:
 
 ## 🎉 Result
 
-You now have a complete, production-ready containerized demo system that:
+You now have a comprehensive, production-ready containerized demo system that:
 
-✅ **Provides interactive PKI education** with visual and hands-on learning
-✅ **Runs anywhere Docker is available** with consistent behavior
-✅ **Supports real-time collaboration** through web interface
-✅ **Includes comprehensive documentation** for users and developers
-✅ **Follows container best practices** for security and efficiency
-✅ **Integrates with existing Vault infrastructure** seamlessly
+✅ **Provides enhanced PKI education** with visual workflow comparisons and hands-on learning  
+✅ **Demonstrates both traditional and modern approaches** with `/sign` and `/issue` workflows  
+✅ **Shows Root CA foundation** with creation process and verification  
+✅ **Runs anywhere Docker is available** with consistent behavior on port 3020  
+✅ **Supports real-time collaboration** through enhanced web interface  
+✅ **Includes enterprise-style diagrams** with organizational personas and business context  
+✅ **Follows container best practices** for security and efficiency  
+✅ **Integrates with existing Vault infrastructure** seamlessly  
+✅ **Provides comprehensive educational outcomes** for multiple audiences  
 
-The container bridges the gap between CLI demos and educational presentations, providing both visual understanding and hands-on experience with Vault PKI operations.
+The enhanced container system bridges the gap between theoretical understanding and practical implementation, providing visual workflow comparisons, security considerations, and hands-on experience with both traditional CSR signing and modern automated certificate management approaches using HashiCorp Vault PKI.
