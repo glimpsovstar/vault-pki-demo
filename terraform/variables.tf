@@ -1,3 +1,10 @@
+# AWS Region
+variable "aws_region" {
+  description = "AWS region for resource deployment"
+  type        = string
+  default     = "ap-southeast-2"
+}
+
 variable "vault_addr" {
   description = "The address of the Vault server (e.g. https://vault-cluster-public-....hcp.hashicorp.cloud:8200)"
   type        = string
@@ -118,4 +125,67 @@ variable "aws_role_tag_key" {
   description = "EC2 tag key used for role-based authentication (for ASG scenarios)"
   type        = string
   default     = "VaultRole"
+}
+
+# EC2 Instance variables
+variable "ec2_ami_id" {
+  description = "AMI ID for EC2 instance"
+  type        = string
+  default     = "ami-0d699116d22d2cb59"  # RHEL9 - 2025-05-28 (ap-southeast-2)
+}
+
+variable "ec2_instance_type" {
+  description = "EC2 instance type"
+  type        = string
+  default     = "t2.micro"
+}
+
+variable "aws_key_pair_name" {
+  description = "AWS EC2 key pair name for SSH access"
+  type        = string
+  default     = "djoo-demo-ec2-keypair"
+}
+
+variable "ec2_iam_instance_profile" {
+  description = "IAM instance profile for EC2 instance"
+  type        = string
+  default     = "tfstacks-profile"
+}
+
+# Network variables from TFC workspace outputs
+variable "vpc_id" {
+  description = "VPC ID from tf-aws-network-dev workspace"
+  type        = string
+}
+
+variable "vpc_cidr_block" {
+  description = "VPC CIDR block from tf-aws-network-dev workspace"
+  type        = string
+}
+
+variable "vpc_public_subnets" {
+  description = "Public subnets from tf-aws-network-dev workspace"
+  type        = list(string)
+}
+
+variable "vpc_private_subnets" {
+  description = "Private subnets from tf-aws-network-dev workspace"
+  type        = list(string)
+}
+
+variable "security_group_ssh_http_https_allowed" {
+  description = "Security group ID from tf-aws-network-dev workspace"
+  type        = string
+}
+
+# Common tags
+variable "common_tags" {
+  description = "Common tags for all resources"
+  type        = map(string)
+  default = {
+    Terraform   = "true"
+    Environment = "Demo"
+    Owner       = "djoo"
+    Project     = "vault-pki-demo"
+  }
 }

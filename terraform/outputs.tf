@@ -124,3 +124,47 @@ output "aws_usage_examples" {
     note            = "Run these commands from an EC2 instance with proper IAM permissions"
   }
 }
+
+# EC2 Instance Outputs
+output "ec2_instance_id" {
+  description = "EC2 instance ID for djoo-vault-pki-demo1"
+  value       = aws_instance.vault_pki_demo.id
+}
+
+output "ec2_public_ip" {
+  description = "EC2 instance public IP address"
+  value       = aws_eip.vault_pki_demo_eip.public_ip
+}
+
+output "ec2_private_ip" {
+  description = "EC2 instance private IP address"  
+  value       = aws_instance.vault_pki_demo.private_ip
+}
+
+output "ec2_public_dns" {
+  description = "EC2 instance public DNS name"
+  value       = aws_instance.vault_pki_demo.public_dns
+}
+
+# Connection Information
+output "ec2_connection_info" {
+  description = "How to connect to and use the EC2 instance"
+  value = {
+    ssh_command       = "ssh -i ~/.ssh/${var.aws_key_pair_name}.pem ec2-user@${aws_eip.vault_pki_demo_eip.public_ip}"
+    vault_auth_script = "./vault-auth.sh"
+    vault_addr        = var.vault_addr
+    aws_auth_role     = "ec2-combined-role"
+    instance_name     = "djoo-vault-pki-demo1"
+  }
+}
+
+output "ec2_setup_status" {
+  description = "EC2 instance setup and configuration status"
+  value = {
+    user_data_log     = "/var/log/user-data-complete.log"
+    vault_cli         = "Installed via user-data script"
+    auth_script       = "/home/ec2-user/vault-auth.sh"
+    service_name      = "vault-auth.service"
+    note              = "Instance is pre-configured for Vault AWS authentication"
+  }
+}
