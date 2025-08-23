@@ -47,7 +47,6 @@ output "ssh_roles" {
     vm_admin           = vault_ssh_secret_backend_role.vm_admin.name
     ansible_automation = vault_ssh_secret_backend_role.ansible_automation.name
     otp_role           = vault_ssh_secret_backend_role.otp_role.name
-    dynamic_key        = vault_ssh_secret_backend_role.dynamic_key.name
   }
 }
 
@@ -57,7 +56,6 @@ output "ssh_endpoints" {
     sign_vm_admin       = "${vault_mount.ssh.path}/sign/${vault_ssh_secret_backend_role.vm_admin.name}"
     sign_ansible        = "${vault_mount.ssh.path}/sign/${vault_ssh_secret_backend_role.ansible_automation.name}"
     otp_credentials     = "${vault_mount.ssh.path}/creds/${vault_ssh_secret_backend_role.otp_role.name}"
-    dynamic_credentials = "${vault_mount.ssh.path}/creds/${vault_ssh_secret_backend_role.dynamic_key.name}"
     ca_public_key       = "${vault_mount.ssh.path}/public_key"
   }
 }
@@ -133,7 +131,7 @@ output "ec2_instance_id" {
 
 output "ec2_public_ip" {
   description = "EC2 instance public IP address"
-  value       = aws_eip.vault_pki_demo_eip.public_ip
+  value       = aws_instance.vault_pki_demo.public_ip
 }
 
 output "ec2_private_ip" {
@@ -150,7 +148,7 @@ output "ec2_public_dns" {
 output "ec2_connection_info" {
   description = "How to connect to and use the EC2 instance"
   value = {
-    ssh_command       = "ssh -i ~/.ssh/${var.aws_key_pair_name}.pem ec2-user@${aws_eip.vault_pki_demo_eip.public_ip}"
+    ssh_command       = "ssh -i ~/.ssh/${var.aws_key_pair_name}.pem ec2-user@${aws_instance.vault_pki_demo.public_ip}"
     vault_auth_script = "./vault-auth.sh"
     vault_addr        = var.vault_addr
     aws_auth_role     = "ec2-combined-role"

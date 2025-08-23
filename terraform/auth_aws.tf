@@ -13,6 +13,8 @@ resource "vault_aws_auth_backend_role" "ec2_pki_role" {
   backend                         = vault_auth_backend.aws.path
   role                           = "ec2-pki-role"
   auth_type                      = "ec2"
+  bound_account_ids              = [var.aws_account_id]
+  bound_regions                  = var.aws_allowed_regions
   token_policies                 = [vault_policy.pki_operator.name]
   token_ttl                      = 1800  # 30 minutes
   token_max_ttl                  = 7200  # 2 hours
@@ -27,6 +29,8 @@ resource "vault_aws_auth_backend_role" "ec2_ssh_role" {
   backend                         = vault_auth_backend.aws.path
   role                           = "ec2-ssh-role" 
   auth_type                      = "ec2"
+  bound_account_ids              = [var.aws_account_id]
+  bound_regions                  = var.aws_allowed_regions
   token_policies                 = [vault_policy.ansible_ssh.name]
   token_ttl                      = 1800  # 30 minutes
   token_max_ttl                  = 7200  # 2 hours
@@ -41,6 +45,8 @@ resource "vault_aws_auth_backend_role" "ec2_combined_role" {
   backend                         = vault_auth_backend.aws.path
   role                           = "ec2-combined-role"
   auth_type                      = "ec2"
+  bound_account_ids              = [var.aws_account_id]
+  bound_regions                  = var.aws_allowed_regions
   token_policies                 = [vault_policy.app_combined.name]
   token_ttl                      = 3600  # 1 hour for combined access
   token_max_ttl                  = 14400 # 4 hours max

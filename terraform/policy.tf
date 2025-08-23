@@ -95,11 +95,6 @@ path "ssh/sign/vm-admin" {
   capabilities = ["create", "update"]
 }
 
-# Generate dynamic keys if configured
-path "ssh/creds/dynamic-key" {
-  capabilities = ["create", "update"]
-}
-
 # Generate OTP for emergency access
 path "ssh/creds/otp-role" {
   capabilities = ["create", "update"]

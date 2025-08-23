@@ -13,6 +13,9 @@ resource "aws_instance" "vault_pki_demo" {
   # IAM instance profile for AWS auth
   iam_instance_profile = var.ec2_iam_instance_profile
 
+  # Ensure instance gets a public IP automatically
+  associate_public_ip_address = true
+
   # User data to install Vault CLI and dependencies
   user_data = base64encode(templatefile("${path.module}/user-data.sh", {
     vault_addr = var.vault_addr
@@ -30,18 +33,6 @@ resource "aws_instance" "vault_pki_demo" {
   lifecycle {
     create_before_destroy = true
   }
-}
-
-# Elastic IP for the instance
-resource "aws_eip" "vault_pki_demo_eip" {
-  instance = aws_instance.vault_pki_demo.id
-  domain   = "vpc"
-
-  tags = merge(var.common_tags, {
-    Name = "djoo-vault-pki-demo1-eip"
-  })
-
-  depends_on = [aws_instance.vault_pki_demo]
 }
 
 # Ensure instance is running

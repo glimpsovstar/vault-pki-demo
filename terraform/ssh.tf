@@ -90,16 +90,3 @@ resource "vault_ssh_secret_backend_role" "otp_role" {
   ttl     = "300" # 5 minutes - very short for security
   max_ttl = "600" # 10 minutes max
 }
-
-# Dynamic secrets role for temporary SSH keys (requires helper agent on target)
-resource "vault_ssh_secret_backend_role" "dynamic_key" {
-  name         = "dynamic-key"
-  backend      = vault_mount.ssh.path
-  key_type     = "dynamic"
-  default_user = "ubuntu"
-  cidr_list    = "10.0.0.0/8,192.168.0.0/16"
-
-  # Dynamic key constraints
-  ttl     = "1800" # 30 minutes
-  max_ttl = "3600" # 1 hour max
-}
