@@ -1,0 +1,35 @@
+[Unit]
+Description=HashiCorp Vault Agent
+Documentation=https://www.vaultproject.io/docs/agent
+Requires=network-online.target
+After=network-online.target
+ConditionFileNotEmpty={{ vault_agent_config_dir }}/vault-agent.hcl
+
+[Service]
+Type=notify
+User={{ vault_agent_user }}
+Group={{ vault_agent_user }}
+ProtectSystem=full
+ProtectHome=read-only
+PrivateTmp=yes
+PrivateDevices=yes
+SecureBits=keep-caps
+AmbientCapabilities=CAP_IPC_LOCK
+Capabilities=CAP_IPC_LOCK+ep
+CapabilityBoundingSet=CAP_SYSLOG CAP_IPC_LOCK
+NoNewPrivileges=yes
+ExecStart=/usr/local/bin/vault agent -config={{ vault_agent_config_dir }}/vault-agent.hcl
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+LimitNOFILE=65536
+LimitMEMLOCK=infinity
+
+# Logging
+StandardOutput=append:{{ vault_agent_log_dir }}/vault-agent.log
+StandardError=append:{{ vault_agent_log_dir }}/vault-agent-error.log
+
+[Install]
+WantedBy=multi-user.target

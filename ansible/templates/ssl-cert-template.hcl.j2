@@ -1,0 +1,6 @@
+{{ with secret "{{ vault_pki_path }}/issue/{{ vault_pki_role }}" 
+  "common_name={{ demo_domain }}" 
+  "alt_names={{ demo_hostname }}.{{ app_domain }},{{ inventory_hostname }}.{{ app_domain }}" 
+  "ttl={{ cert_max_ttl_h }}h" }}
+{{ .Data.certificate }}
+{{ .Data.issuing_ca }}{{ end }}

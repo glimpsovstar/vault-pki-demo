@@ -1,0 +1,71 @@
+# Simplified Vault Agent Configuration
+# Focuses on core functionality: AWS auth + SSL certificate automation
+
+vault {
+  address = "{{ vault_addr }}"
+  {% if vault_namespace %}
+  namespace = "{{ vault_namespace }}"
+  {% endif %}
+}
+
+# AWS EC2 Auto-Authentication
+auto_auth {
+  method "aws" {
+    mount_path = "auth/aws"
+    config = {
+      type = "ec2"
+      role = "demo-role"
+    }
+  }
+
+  sink "file" {
+    config = {
+      path = "{{ vault_agent_cache_dir }}/vault-token"
+    }
+  }
+}
+
+# Cache for better performance
+cache {
+  use_auto_auth_token = true
+}
+
+# SSL Certificate Template - This is where the magic happens!
+# Vault Agent automatically renews certificates and restarts Apache
+template {
+  contents = <<-EOT
+{{ with secret "{{ vault_pki_path }}/issue/{{ vault_pki_role }}" 
+  "common_name={{ demo_domain }}" 
+  "alt_names={{ demo_hostname }}.{{ app_domain }}" 
+  "ttl={{ cert_max_ttl_h }}h" }}
+{{ .Data.certificate }}
+{{ .Data.issuing_ca }}{{ end }}
+EOT
+  destination = "{{ httpd_ssl_dir }}/server.crt"
+  perms       = 0644
+  command     = "/bin/systemctl reload httpd"
+  
+  wait {
+    min = "10s"
+    max = "30s"
+  }
+}
+
+# SSL Private Key Template
+template {
+  contents = <<-EOT
+{{ with secret "{{ vault_pki_path }}/issue/{{ vault_pki_role }}" 
+  "common_name={{ demo_domain }}" 
+  "alt_names={{ demo_hostname }}.{{ app_domain }}" 
+  "ttl={{ cert_max_ttl_h }}h" }}
+{{ .Data.private_key }}{{ end }}
+EOT
+  destination = "{{ httpd_ssl_dir }}/server.key"
+  perms       = 0600
+  command     = "/bin/systemctl reload httpd"
+  
+  wait {
+    min = "10s"
+    max = "30s"
+  }
+}

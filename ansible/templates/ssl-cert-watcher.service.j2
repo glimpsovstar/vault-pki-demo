@@ -1,0 +1,11 @@
+[Unit]
+Description=SSL Certificate Watcher Service
+After=httpd.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/ssl-cert-watcher.sh
+User=root
+
+[Install]
+WantedBy=multi-user.target

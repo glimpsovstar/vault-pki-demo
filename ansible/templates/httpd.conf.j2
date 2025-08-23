@@ -1,0 +1,22 @@
+# Vault PKI Demo - Apache Configuration
+# Basic Apache settings for the demo environment
+
+# Server configuration
+ServerTokens Prod
+ServerSignature Off
+
+# Enable required modules
+LoadModule rewrite_module modules/mod_rewrite.so
+LoadModule headers_module modules/mod_headers.so
+LoadModule ssl_module modules/mod_ssl.so
+
+# Security settings
+TraceEnable off
+ServerName {{ demo_hostname }}.{{ app_domain }}
+
+# Default charset
+AddDefaultCharset UTF-8
+
+# MIME types for modern web
+AddType application/javascript .js
+AddType text/css .css

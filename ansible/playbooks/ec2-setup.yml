@@ -1,0 +1,124 @@
+---
+# EC2 Instance Setup Playbook
+# This playbook replaces user-data.sh to configure EC2 instances with Vault CLI and dependencies
+
+- name: Configure EC2 instance for Vault integration
+  hosts: ec2_instances
+  become: true
+  vars:
+    vault_version: "1.15.2"
+    vault_addr: "{{ vault_server_url }}"
+    
+  tasks:
+    - name: Update system packages
+      ansible.builtin.dnf:
+        name: "*"
+        state: present
+        update_cache: true
+      tags: system
+
+    - name: Install required packages
+      ansible.builtin.dnf:
+        name:
+          - wget
+          - unzip
+          - curl
+          - jq
+          - openssl
+        state: present
+      tags: packages
+
+    - name: Download Vault CLI
+      ansible.builtin.get_url:
+        url: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_amd64.zip"
+        dest: "/tmp/vault_{{ vault_version }}_linux_amd64.zip"
+        mode: '0644'
+      tags: vault
+
+    - name: Extract Vault CLI
+      ansible.builtin.unarchive:
+        src: "/tmp/vault_{{ vault_version }}_linux_amd64.zip"
+        dest: "/tmp"
+        remote_src: true
+      tags: vault
+
+    - name: Install Vault CLI binary
+      ansible.builtin.copy:
+        src: "/tmp/vault"
+        dest: "/usr/local/bin/vault"
+        mode: '0755'
+        remote_src: true
+      tags: vault
+
+    - name: Clean up Vault installation files
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - "/tmp/vault_{{ vault_version }}_linux_amd64.zip"
+        - "/tmp/vault"
+      tags: vault
+
+    - name: Set Vault address in system environment
+      ansible.builtin.lineinfile:
+        path: /etc/environment
+        line: "VAULT_ADDR={{ vault_addr }}"
+        mode: '0644'
+        create: true
+      tags: environment
+
+    - name: Set Vault address in ec2-user bashrc
+      ansible.builtin.lineinfile:
+        path: /home/ec2-user/.bashrc
+        line: "export VAULT_ADDR={{ vault_addr }}"
+        owner: ec2-user
+        group: ec2-user
+        mode: '0644'
+        create: true
+      tags: environment
+
+    - name: Create vault user
+      ansible.builtin.user:
+        name: vault
+        shell: /bin/bash
+        create_home: true
+      tags: users
+
+    - name: Create vault auth script from template
+      ansible.builtin.template:
+        src: vault-auth.sh.j2
+        dest: /home/ec2-user/vault-auth.sh
+        owner: ec2-user
+        group: ec2-user
+        mode: '0755'
+      tags: vault_auth
+
+    - name: Create systemd service for vault authentication
+      ansible.builtin.template:
+        src: vault-auth.service.j2
+        dest: /etc/systemd/system/vault-auth.service
+        mode: '0644'
+      notify: Reload systemd
+      tags: vault_auth
+
+    - name: Enable vault-auth service
+      ansible.builtin.systemd:
+        name: vault-auth.service
+        enabled: true
+        daemon_reload: true
+      tags: vault_auth
+
+    - name: Create completion log
+      ansible.builtin.copy:
+        content: |
+          ✅ EC2 instance setup complete - Vault CLI installed and configured
+          📋 Run './vault-auth.sh' as ec2-user to authenticate to Vault
+          🕐 Setup completed at {{ ansible_date_time.iso8601 }}
+        dest: /var/log/ansible-setup-complete.log
+        mode: '0644'
+      tags: logging
+
+  handlers:
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true

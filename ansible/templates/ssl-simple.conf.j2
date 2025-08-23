@@ -1,0 +1,23 @@
+# Simple SSL Configuration for Vault PKI Demo
+# This replaces virtual host complexity with basic SSL setup
+
+# Update the default SSL virtual host to use Vault certificates
+SSLCertificateFile {{ httpd_ssl_dir }}/server.crt
+SSLCertificateKeyFile {{ httpd_ssl_dir }}/server.key
+
+# Modern SSL configuration
+SSLProtocol all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1
+SSLCipherSuite ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384
+SSLHonorCipherOrder on
+
+# Security headers
+Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+Header always set X-Content-Type-Options nosniff
+Header always set X-Frame-Options DENY
+
+# Demo headers
+Header always set X-Vault-PKI-Demo "Phase2-Simplified"
+Header always set X-Certificate-Source "HashiCorp-Vault-PKI"
+
+# Server name for SSL
+ServerName {{ demo_hostname }}.{{ app_domain }}

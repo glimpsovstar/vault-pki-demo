@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# EC2 Vault Authentication Script
+# This script authenticates to Vault using AWS auth method
+
+export VAULT_ADDR="{{ vault_addr }}"
+
+echo "🔐 Authenticating to Vault using AWS auth method..."
+
+# Authenticate using EC2 instance metadata
+TOKEN=$(vault write -field=token auth/aws/login role=ec2-combined-role)
+
+if [ $? -eq 0 ] && [ ! -z "$TOKEN" ]; then
+    echo "✅ Authentication successful!"
+    export VAULT_TOKEN="$TOKEN"
+    
+    echo "🔍 Token info:"
+    vault token lookup
+    
+    echo ""
+    echo "📋 Available commands:"
+    echo "  # PKI Operations"
+    echo "  vault write {{ vault_pki_path | default('pki-demo') }}/issue/{{ vault_pki_role | default('role-pki-demo') }} common_name=app.{{ ansible_domain | default('demo.local') }} ttl=24h"
+    echo "  vault list {{ vault_pki_path | default('pki-demo') }}/certs"
+    echo ""
+    echo "  # SSH Operations" 
+    echo "  vault write ssh/sign/ansible-automation public_key=@~/.ssh/id_rsa.pub"
+    echo ""
+    echo "  # Set environment for current session"
+    echo "  export VAULT_TOKEN='$TOKEN'"
+else
+    echo "❌ Authentication failed!"
+    exit 1
+fi

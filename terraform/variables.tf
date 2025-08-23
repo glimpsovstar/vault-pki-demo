@@ -50,7 +50,7 @@ variable "cert_max_ttl_h" {
 variable "ca_max_ttl_h" {
   description = "Maximum TTL for CA certificates in hours. Default is 10 years."
   type        = number
-  default     = 87600  # 10 years
+  default     = 87600 # 10 years
 }
 
 variable "pki_role_name" {
@@ -75,20 +75,20 @@ variable "ssh_cidr_blocks" {
 variable "ssh_certificate_ttl" {
   description = "Default TTL for SSH certificates in seconds"
   type        = number
-  default     = 3600  # 1 hour
+  default     = 3600 # 1 hour
 }
 
 variable "ssh_max_ttl" {
   description = "Maximum TTL for SSH certificates in seconds"
   type        = number
-  default     = 86400  # 24 hours
+  default     = 86400 # 24 hours
 }
 
 # AWS Auth Method Variables
 variable "aws_account_id" {
   description = "AWS Account ID allowed for EC2 authentication"
   type        = string
-  default     = ""  # Set in terraform.auto.tfvars
+  default     = "" # Set in terraform.auto.tfvars
 }
 
 variable "aws_allowed_regions" {
@@ -100,25 +100,25 @@ variable "aws_allowed_regions" {
 variable "aws_allowed_instance_ids" {
   description = "List of specific EC2 instance IDs allowed (empty = all instances in account/region)"
   type        = list(string)
-  default     = []  # Empty = allow all instances that meet other criteria
+  default     = [] # Empty = allow all instances that meet other criteria
 }
 
 variable "aws_allowed_ami_ids" {
   description = "List of AMI IDs allowed for EC2 authentication (empty = all AMIs)"
   type        = list(string)
-  default     = []  # Empty = allow all AMIs
+  default     = [] # Empty = allow all AMIs
 }
 
 variable "aws_allowed_subnet_ids" {
   description = "List of subnet IDs allowed for EC2 authentication (empty = all subnets)"
   type        = list(string)
-  default     = []  # Empty = allow all subnets
+  default     = [] # Empty = allow all subnets
 }
 
 variable "aws_allowed_vpc_ids" {
   description = "List of VPC IDs allowed for EC2 authentication (empty = all VPCs)"
   type        = list(string)
-  default     = []  # Empty = allow all VPCs in account
+  default     = [] # Empty = allow all VPCs in account
 }
 
 variable "aws_role_tag_key" {
@@ -131,7 +131,7 @@ variable "aws_role_tag_key" {
 variable "ec2_ami_id" {
   description = "AMI ID for EC2 instance"
   type        = string
-  default     = "ami-0d699116d22d2cb59"  # RHEL9 - 2025-05-28 (ap-southeast-2)
+  default     = "ami-0d699116d22d2cb59" # RHEL9 - 2025-05-28 (ap-southeast-2)
 }
 
 variable "ec2_instance_type" {

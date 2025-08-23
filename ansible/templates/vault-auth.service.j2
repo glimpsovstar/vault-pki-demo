@@ -1,0 +1,14 @@
+[Unit]
+Description=Vault AWS Authentication
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ec2-user
+Environment=VAULT_ADDR={{ vault_addr }}
+ExecStart=/home/ec2-user/vault-auth.sh
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target

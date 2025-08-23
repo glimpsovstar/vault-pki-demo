@@ -1,0 +1,20 @@
+#!/bin/bash
+# SSL Certificate File Watcher
+# Monitors certificate files for changes and restarts Apache
+
+CERT_FILE="{{ httpd_ssl_dir }}/server.crt"
+KEY_FILE="{{ httpd_ssl_dir }}/server.key"
+
+echo "SSL certificate files updated - restarting Apache..."
+echo "Certificate: $CERT_FILE"
+echo "Key: $KEY_FILE"
+
+# Verify certificate is valid before restarting Apache
+if openssl x509 -in "$CERT_FILE" -checkend 0 > /dev/null 2>&1; then
+    echo "Certificate validation successful - reloading Apache"
+    systemctl reload httpd
+    echo "Apache reloaded successfully"
+else
+    echo "Certificate validation failed - not restarting Apache"
+    exit 1
+fi

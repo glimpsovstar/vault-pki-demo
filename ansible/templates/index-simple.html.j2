@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vault PKI Demo - Simplified</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .vault-logo { color: #1563ff; font-weight: bold; font-size: 1.2em; }
+        .status-good { color: #28a745; }
+        .code-block {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            border-left: 4px solid #1563ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="vault-logo">🔐 VAULT</span> PKI Demo - Simplified</h1>
+        
+        <h2>✅ What's Working</h2>
+        <ul>
+            <li class="status-good">✅ Vault Agent: Auto-authenticated via AWS EC2</li>
+            <li class="status-good">✅ SSL Certificate: Auto-issued from Vault PKI</li>
+            <li class="status-good">✅ Apache: Serving HTTPS with Vault certificates</li>
+            <li class="status-good">✅ Auto-renewal: Vault Agent handles everything!</li>
+        </ul>
+
+        <h2>🎯 Demo Details</h2>
+        <p><strong>Domain:</strong> {{ demo_domain }}</p>
+        <p><strong>Hostname:</strong> {{ demo_hostname }}.{{ app_domain }}</p>
+        <p><strong>Certificate TTL:</strong> {{ cert_max_ttl_h }} hours</p>
+        <p><strong>Vault Address:</strong> {{ vault_addr }}</p>
+
+        <h2>🔧 Key Insight</h2>
+        <p>This simplified demo shows that <strong>Vault Agent does ALL the work</strong>:</p>
+        <ul>
+            <li>🔐 Authenticates with AWS EC2 metadata</li>
+            <li>📜 Issues SSL certificates from Vault PKI</li>
+            <li>🔄 Auto-renews certificates before expiration</li>
+            <li>⚡ Restarts Apache when certificates update</li>
+            <li>🚫 <strong>No additional watchers needed!</strong></li>
+        </ul>
+
+        <h2>💡 Why This is Better</h2>
+        <div class="code-block">
+        <strong>❌ Complex Approach:</strong>
+        Vault Agent + File Watcher + Systemd Path Units + Custom Scripts
+        
+        <strong>✅ Simple Approach:</strong> 
+        Just Vault Agent with template blocks - it handles everything!
+        </div>
+
+        <h2>🔍 Check Certificate</h2>
+        <div class="code-block">
+# View certificate details
+openssl x509 -in /etc/httpd/ssl/server.crt -text -noout
+
+# Manual renewal (if needed)
+sudo /usr/local/bin/renew-ssl-cert.sh
+        </div>
+
+        <p><em>Current time: <span id="time"></span></em></p>
+    </div>
+
+    <script>
+        setInterval(() => {
+            document.getElementById('time').textContent = new Date().toISOString();
+        }, 1000);
+    </script>
+</body>
+</html>

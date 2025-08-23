@@ -1,0 +1,124 @@
+#!/bin/bash
+# SSL Certificate Renewal Script for Vault PKI Demo
+# This script manually renews SSL certificates using Vault Agent
+
+set -e
+
+VAULT_TOKEN_FILE="{{ vault_agent_cache_dir }}/vault-token"
+SSL_CERT_FILE="{{ httpd_ssl_dir }}/server.crt"
+SSL_KEY_FILE="{{ httpd_ssl_dir }}/server.key"
+VAULT_ADDR="{{ vault_addr }}"
+PKI_PATH="{{ vault_pki_path }}"
+PKI_ROLE="{{ vault_pki_role }}"
+DOMAIN="{{ demo_domain }}"
+ALT_NAMES="{{ demo_hostname }}.{{ app_domain }}"
+CERT_TTL="{{ cert_max_ttl_h }}h"
+
+echo "=== Vault PKI SSL Certificate Renewal ==="
+echo "Domain: $DOMAIN"
+echo "Alt Names: $ALT_NAMES"
+echo "TTL: $CERT_TTL"
+echo "Vault Address: $VAULT_ADDR"
+echo
+
+# Check if Vault token exists
+if [ ! -f "$VAULT_TOKEN_FILE" ]; then
+    echo "Error: Vault token file not found at $VAULT_TOKEN_FILE"
+    echo "Vault Agent may not be running or authenticated."
+    exit 1
+fi
+
+VAULT_TOKEN=$(cat "$VAULT_TOKEN_FILE")
+if [ -z "$VAULT_TOKEN" ]; then
+    echo "Error: Vault token is empty"
+    exit 1
+fi
+
+echo "✅ Vault token found"
+
+# Request new certificate from Vault
+echo "🔄 Requesting new SSL certificate from Vault..."
+
+CERT_RESPONSE=$(curl -s -X POST \
+    -H "X-Vault-Token: $VAULT_TOKEN" \
+    {% if vault_namespace %}-H "X-Vault-Namespace: {{ vault_namespace }}" \{% endif %}
+    -H "Content-Type: application/json" \
+    -d "{
+        \"common_name\": \"$DOMAIN\",
+        \"alt_names\": \"$ALT_NAMES\",
+        \"ttl\": \"$CERT_TTL\"
+    }" \
+    "$VAULT_ADDR/v1/$PKI_PATH/issue/$PKI_ROLE")
+
+# Check if request was successful
+if echo "$CERT_RESPONSE" | jq -e '.errors' > /dev/null 2>&1; then
+    echo "❌ Error requesting certificate from Vault:"
+    echo "$CERT_RESPONSE" | jq -r '.errors[]'
+    exit 1
+fi
+
+# Extract certificate and private key
+CERTIFICATE=$(echo "$CERT_RESPONSE" | jq -r '.data.certificate')
+PRIVATE_KEY=$(echo "$CERT_RESPONSE" | jq -r '.data.private_key')
+ISSUING_CA=$(echo "$CERT_RESPONSE" | jq -r '.data.issuing_ca')
+SERIAL_NUMBER=$(echo "$CERT_RESPONSE" | jq -r '.data.serial_number')
+
+if [ "$CERTIFICATE" = "null" ] || [ "$PRIVATE_KEY" = "null" ]; then
+    echo "❌ Failed to extract certificate or private key from Vault response"
+    exit 1
+fi
+
+# Backup existing certificates
+if [ -f "$SSL_CERT_FILE" ]; then
+    cp "$SSL_CERT_FILE" "${SSL_CERT_FILE}.backup.$(date +%Y%m%d_%H%M%S)"
+    echo "✅ Existing certificate backed up"
+fi
+
+if [ -f "$SSL_KEY_FILE" ]; then
+    cp "$SSL_KEY_FILE" "${SSL_KEY_FILE}.backup.$(date +%Y%m%d_%H%M%S)"
+    echo "✅ Existing private key backed up"
+fi
+
+# Write new certificate and private key
+echo "$CERTIFICATE" > "$SSL_CERT_FILE"
+echo "$ISSUING_CA" >> "$SSL_CERT_FILE"
+echo "$PRIVATE_KEY" > "$SSL_KEY_FILE"
+
+# Set proper permissions
+chown apache:apache "$SSL_CERT_FILE" "$SSL_KEY_FILE"
+chmod 644 "$SSL_CERT_FILE"
+chmod 600 "$SSL_KEY_FILE"
+
+echo "✅ SSL certificate and private key updated"
+echo "Serial Number: $SERIAL_NUMBER"
+
+# Verify certificate
+echo "🔍 Verifying new certificate..."
+CERT_SUBJECT=$(openssl x509 -in "$SSL_CERT_FILE" -subject -noout)
+CERT_DATES=$(openssl x509 -in "$SSL_CERT_FILE" -dates -noout)
+
+echo "Certificate Subject: $CERT_SUBJECT"
+echo "Certificate Validity: $CERT_DATES"
+
+# Test certificate validity
+if openssl x509 -in "$SSL_CERT_FILE" -checkend 0 > /dev/null 2>&1; then
+    echo "✅ Certificate is valid"
+else
+    echo "❌ Certificate validation failed"
+    exit 1
+fi
+
+# Restart Apache to load new certificate
+echo "🔄 Restarting Apache HTTP server..."
+systemctl reload httpd
+
+if systemctl is-active --quiet httpd; then
+    echo "✅ Apache restarted successfully"
+else
+    echo "❌ Apache restart failed"
+    systemctl status httpd
+    exit 1
+fi
+
+echo "🎉 SSL certificate renewal completed successfully!"
+echo "New certificate is active and Apache is serving HTTPS traffic."

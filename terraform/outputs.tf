@@ -14,6 +14,46 @@ output "vault_namespace" {
   value       = var.vault_namespace
 }
 
+# EC2 Instance Outputs
+output "ec2_instance_id" {
+  description = "EC2 Instance ID"
+  value       = aws_instance.vault_pki_demo.id
+}
+
+output "ec2_public_ip" {
+  description = "EC2 instance public IP address"
+  value       = aws_instance.vault_pki_demo.public_ip
+}
+
+output "ec2_private_ip" {
+  description = "EC2 instance private IP address"
+  value       = aws_instance.vault_pki_demo.private_ip
+}
+
+output "ec2_public_dns" {
+  description = "EC2 instance public DNS name"
+  value       = aws_instance.vault_pki_demo.public_dns
+}
+
+# Route53 DNS Outputs
+output "demo_domain_url" {
+  description = "Full URL for the demo application"
+  value       = "https://vault-pki-demo.${var.common_domain}"
+}
+
+output "pki_role_domain_url" {
+  description = "PKI role domain URL"
+  value       = "https://${var.pki_role_name}.${var.common_domain}"
+}
+
+output "route53_records" {
+  description = "Route53 DNS records created"
+  value = {
+    demo_hostname   = aws_route53_record.vault_pki_demo.fqdn
+    pki_role_domain = aws_route53_record.pki_role_domain.fqdn
+  }
+}
+
 output "pki_path" {
   description = "The path where the PKI engine is mounted."
   value       = vault_mount.pki.path
@@ -53,10 +93,10 @@ output "ssh_roles" {
 output "ssh_endpoints" {
   description = "SSH secrets engine endpoints for different operations"
   value = {
-    sign_vm_admin       = "${vault_mount.ssh.path}/sign/${vault_ssh_secret_backend_role.vm_admin.name}"
-    sign_ansible        = "${vault_mount.ssh.path}/sign/${vault_ssh_secret_backend_role.ansible_automation.name}"
-    otp_credentials     = "${vault_mount.ssh.path}/creds/${vault_ssh_secret_backend_role.otp_role.name}"
-    ca_public_key       = "${vault_mount.ssh.path}/public_key"
+    sign_vm_admin   = "${vault_mount.ssh.path}/sign/${vault_ssh_secret_backend_role.vm_admin.name}"
+    sign_ansible    = "${vault_mount.ssh.path}/sign/${vault_ssh_secret_backend_role.ansible_automation.name}"
+    otp_credentials = "${vault_mount.ssh.path}/creds/${vault_ssh_secret_backend_role.otp_role.name}"
+    ca_public_key   = "${vault_mount.ssh.path}/public_key"
   }
 }
 
@@ -123,27 +163,6 @@ output "aws_usage_examples" {
   }
 }
 
-# EC2 Instance Outputs
-output "ec2_instance_id" {
-  description = "EC2 instance ID for djoo-vault-pki-demo1"
-  value       = aws_instance.vault_pki_demo.id
-}
-
-output "ec2_public_ip" {
-  description = "EC2 instance public IP address"
-  value       = aws_instance.vault_pki_demo.public_ip
-}
-
-output "ec2_private_ip" {
-  description = "EC2 instance private IP address"  
-  value       = aws_instance.vault_pki_demo.private_ip
-}
-
-output "ec2_public_dns" {
-  description = "EC2 instance public DNS name"
-  value       = aws_instance.vault_pki_demo.public_dns
-}
-
 # Connection Information
 output "ec2_connection_info" {
   description = "How to connect to and use the EC2 instance"
@@ -159,10 +178,10 @@ output "ec2_connection_info" {
 output "ec2_setup_status" {
   description = "EC2 instance setup and configuration status"
   value = {
-    user_data_log     = "/var/log/user-data-complete.log"
-    vault_cli         = "Installed via user-data script"
-    auth_script       = "/home/ec2-user/vault-auth.sh"
-    service_name      = "vault-auth.service"
-    note              = "Instance is pre-configured for Vault AWS authentication"
+    user_data_log = "/var/log/user-data-complete.log"
+    vault_cli     = "Installed via user-data script"
+    auth_script   = "/home/ec2-user/vault-auth.sh"
+    service_name  = "vault-auth.service"
+    note          = "Instance is pre-configured for Vault AWS authentication"
   }
 }

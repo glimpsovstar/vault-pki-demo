@@ -1,0 +1,11 @@
+[Unit]
+Description=Watch SSL certificate files for changes
+After=vault-agent.service
+
+[Path]
+PathModified={{ httpd_ssl_dir }}/server.crt
+PathModified={{ httpd_ssl_dir }}/server.key
+Unit=ssl-cert-watcher.service
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,212 @@
+---
+# Phase 2 Demo: Complete PKI Automation with Vault Agent
+# This playbook sets up a fully automated PKI workflow with:
+# - Vault Agent with AWS EC2 authentication
+# - Apache HTTP server with SSL certificates from Vault
+# - Auto-renewal and restart capabilities
+
+- name: Phase 2 - PKI Automation Demo Setup
+  hosts: ec2_instances
+  become: true
+  vars:
+    vault_agent_user: "vault-agent"
+    vault_agent_config_dir: "/etc/vault-agent.d"
+    vault_agent_cache_dir: "/var/lib/vault-agent"
+    vault_agent_log_dir: "/var/log/vault-agent"
+    httpd_ssl_dir: "/etc/httpd/ssl"
+    httpd_document_root: "/var/www/html"
+    demo_hostname: "vault-pki-demo"
+    demo_domain: "{{ vault_pki_role }}.{{ app_domain }}"
+    
+  tasks:
+    # ===== VAULT AGENT SETUP =====
+    - name: Create vault-agent user
+      ansible.builtin.user:
+        name: "{{ vault_agent_user }}"
+        system: true
+        shell: /bin/false
+        home: "{{ vault_agent_cache_dir }}"
+        create_home: true
+        comment: "Vault Agent service user"
+
+    - name: Create vault-agent directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ vault_agent_user }}"
+        group: "{{ vault_agent_user }}"
+        mode: '0755'
+      loop:
+        - "{{ vault_agent_config_dir }}"
+        - "{{ vault_agent_cache_dir }}"
+        - "{{ vault_agent_log_dir }}"
+        - "{{ httpd_ssl_dir }}"
+
+    - name: Download and install Vault binary
+      ansible.builtin.get_url:
+        url: "https://releases.hashicorp.com/vault/1.18.1/vault_1.18.1_linux_amd64.zip"
+        dest: "/tmp/vault.zip"
+        mode: '0644'
+      register: vault_download
+
+    - name: Extract Vault binary
+      ansible.builtin.unarchive:
+        src: "/tmp/vault.zip"
+        dest: "/usr/local/bin"
+        remote_src: true
+        owner: root
+        group: root
+        mode: '0755'
+        creates: "/usr/local/bin/vault"
+      when: vault_download.changed
+
+    - name: Create Vault Agent configuration
+      ansible.builtin.template:
+        src: vault-agent.hcl.j2
+        dest: "{{ vault_agent_config_dir }}/vault-agent.hcl"
+        owner: "{{ vault_agent_user }}"
+        group: "{{ vault_agent_user }}"
+        mode: '0644'
+      notify: Restart vault-agent
+
+    - name: Create Vault Agent SSL certificate template
+      ansible.builtin.template:
+        src: ssl-cert-template.hcl.j2
+        dest: "{{ vault_agent_config_dir }}/ssl-cert-template.hcl"
+        owner: "{{ vault_agent_user }}"
+        group: "{{ vault_agent_user }}"
+        mode: '0644'
+      notify: Restart vault-agent
+
+    - name: Create Vault Agent systemd service
+      ansible.builtin.template:
+        src: vault-agent.service.j2
+        dest: "/etc/systemd/system/vault-agent.service"
+        owner: root
+        group: root
+        mode: '0644'
+      notify: 
+        - Reload systemd
+        - Restart vault-agent
+
+    # ===== APACHE HTTPD SETUP =====
+    - name: Install Apache HTTP server and SSL module
+      ansible.builtin.dnf:
+        name:
+          - httpd
+          - mod_ssl
+          - openssl
+        state: present
+
+    - name: Create Apache SSL configuration directory
+      ansible.builtin.file:
+        path: "{{ httpd_ssl_dir }}"
+        state: directory
+        owner: apache
+        group: apache
+        mode: '0750'
+
+    - name: Create demo index.html page
+      ansible.builtin.template:
+        src: index.html.j2
+        dest: "{{ httpd_document_root }}/index.html"
+        owner: apache
+        group: apache
+        mode: '0644'
+
+    - name: Create SSL certificate renewal script
+      ansible.builtin.template:
+        src: renew-ssl-cert.sh.j2
+        dest: "/usr/local/bin/renew-ssl-cert.sh"
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Configure Apache SSL virtual host
+      ansible.builtin.template:
+        src: ssl-vhost.conf.j2
+        dest: "/etc/httpd/conf.d/ssl-demo.conf"
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Restart httpd
+
+    - name: Configure Apache main configuration
+      ansible.builtin.template:
+        src: httpd.conf.j2
+        dest: "/etc/httpd/conf.d/demo.conf"
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Restart httpd
+
+    # ===== SSL CERTIFICATE AUTOMATION =====
+    # Note: Vault Agent handles automatic certificate renewal and Apache restart
+    # via the template blocks in vault-agent.hcl configuration
+    - name: Create SSL certificate renewal script (for manual troubleshooting)
+      ansible.builtin.template:
+        src: renew-ssl-cert.sh.j2
+        dest: "/usr/local/bin/renew-ssl-cert.sh"
+        owner: root
+        group: root
+        mode: '0755'
+
+    # ===== FIREWALL CONFIGURATION =====
+    - name: Configure firewall for HTTP and HTTPS
+      ansible.builtin.command:
+        cmd: "firewall-cmd --permanent --add-service={{ item }}"
+      loop:
+        - http
+        - https
+      failed_when: false
+      changed_when: true
+
+    - name: Reload firewall configuration
+      ansible.builtin.command:
+        cmd: "firewall-cmd --reload"
+      failed_when: false
+      changed_when: true
+
+    # ===== SERVICE MANAGEMENT =====
+    - name: Enable and start Vault Agent
+      ansible.builtin.systemd:
+        name: vault-agent
+        enabled: true
+        state: started
+        daemon_reload: true
+
+    - name: Enable and start Apache HTTPD
+      ansible.builtin.systemd:
+        name: httpd
+        enabled: true
+        state: started
+
+    # ===== INITIAL SSL CERTIFICATE =====
+    # Vault Agent will automatically generate the certificate via templates
+    - name: Wait for Vault Agent to authenticate and get initial certificate
+      ansible.builtin.wait_for:
+        path: "{{ httpd_ssl_dir }}/server.crt"
+        timeout: 120
+      failed_when: false
+
+    - name: Force SSL certificate generation if not present (fallback)
+      ansible.builtin.command: "/usr/local/bin/renew-ssl-cert.sh"
+      when: not ansible_check_mode
+      failed_when: false
+      changed_when: true
+      notify: Restart httpd
+
+  handlers:
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Restart vault-agent
+      ansible.builtin.systemd:
+        name: vault-agent
+        state: restarted
+
+    - name: Restart httpd
+      ansible.builtin.systemd:
+        name: httpd
+        state: restarted

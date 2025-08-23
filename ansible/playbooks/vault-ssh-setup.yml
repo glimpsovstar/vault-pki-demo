@@ -1,0 +1,90 @@
+---
+# Vault SSH Certificate Setup Playbook
+# This playbook sets up SSH certificate authentication using Vault SSH engine
+
+- name: Setup Vault SSH Certificate Authentication
+  hosts: localhost
+  gather_facts: false
+  vars:
+    vault_ssh_key_path: "~/.ssh/vault-ssh-key"
+    vault_ssh_cert_path: "~/.ssh/vault-ssh-key-cert.pub"
+    vault_ssh_role: "ansible-automation"
+    vault_ssh_engine: "ssh-client-signer"
+    vault_ssh_ttl: "1h"
+    ssh_key_type: "rsa"
+    ssh_key_bits: 4096
+    
+  tasks:
+    - name: Ensure SSH directory exists
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.ssh"
+        state: directory
+        mode: '0700'
+    
+    - name: Check if Vault SSH private key exists
+      ansible.builtin.stat:
+        path: "{{ vault_ssh_key_path | expanduser }}"
+      register: vault_ssh_key_stat
+    
+    - name: Generate SSH key pair for Vault authentication
+      ansible.builtin.command:
+        cmd: >-
+          ssh-keygen -t {{ ssh_key_type }} -b {{ ssh_key_bits }}
+          -f {{ vault_ssh_key_path | expanduser }} -N ''
+          -C 'vault-ssh-{{ ansible_date_time.epoch }}'
+        creates: "{{ vault_ssh_key_path | expanduser }}"
+      when: not vault_ssh_key_stat.stat.exists
+      
+    - name: Read public key content
+      ansible.builtin.slurp:
+        src: "{{ vault_ssh_key_path | expanduser }}.pub"
+      register: public_key_content
+      
+    - name: Sign SSH public key with Vault
+      ansible.builtin.uri:
+        url: "{{ vault_addr }}/v1/{{ vault_ssh_engine }}/sign/{{ vault_ssh_role }}"
+        method: POST
+        headers:
+          X-Vault-Token: "{{ vault_token }}"
+          X-Vault-Namespace: "{{ vault_namespace | default('') }}"
+        body_format: json
+        body:
+          public_key: "{{ public_key_content.content | b64decode | trim }}"
+          ttl: "{{ vault_ssh_ttl }}"
+          valid_principals: "{{ vault_ssh_principals | default('ansible-automation,ec2-user') }}"
+        return_content: true
+      register: vault_ssh_response
+      
+    - name: Save signed certificate
+      ansible.builtin.copy:
+        content: "{{ vault_ssh_response.json.data.signed_key }}"
+        dest: "{{ vault_ssh_cert_path | expanduser }}"
+        mode: '0644'
+      when: vault_ssh_response.json.data.signed_key is defined
+      
+    - name: Display SSH certificate information
+      ansible.builtin.debug:
+        msg: |
+          SSH Certificate created successfully!
+          Private Key: {{ vault_ssh_key_path | expanduser }}
+          Certificate: {{ vault_ssh_cert_path | expanduser }}
+          Serial Number: {{ vault_ssh_response.json.data.serial_number | default('N/A') }}
+          Valid Principals: {{ vault_ssh_response.json.data.valid_principals | default('N/A') }}
+          
+          To use this certificate for SSH connections:
+          ssh -i {{ vault_ssh_key_path | expanduser }} -o CertificateFile={{ vault_ssh_cert_path | expanduser }} user@hostname
+          
+          For Ansible, the inventory is already configured to use these files.
+      when: vault_ssh_response.json.data.signed_key is defined
+      
+    - name: Test SSH certificate (optional)
+      ansible.builtin.command:
+        cmd: "ssh-keygen -L -f {{ vault_ssh_cert_path | expanduser }}"
+      register: cert_details
+      changed_when: false
+      failed_when: false
+      
+    - name: Display certificate details
+      ansible.builtin.debug:
+        var: cert_details.stdout_lines
+      when: cert_details.rc == 0
