@@ -17,6 +17,27 @@ This demo system showcases the complete certificate lifecycle management using H
 
 ## 🚀 Quick Start
 
+### Main PKI Demo (Primary Focus)
+
+**Prerequisites:**
+- HashiCorp Vault (1.15.2+)
+- Terraform (1.6.0+) 
+- Docker & Docker Compose
+- OpenSSL, jq
+
+**Run the Main Demo:**
+1. **Infrastructure**: `cd terraform/ && terraform apply` (deploys PKI + SSH + AWS auth)
+2. **PKI Demo**: `cd ../scripts/ && ./demo-magic-vault-pki.sh` 
+3. **Web Interface**: `cd ../container/ && docker-compose up`
+4. **Access**: <http://localhost:3020>
+5. **AWS Auth**: For EC2 instances, see `terraform/ROOT-TOKEN-GUIDE.md`
+
+⚠️ **Root Token Note**: Your 4-hour root token expiration won't affect the running demo! See `terraform/ROOT-TOKEN-GUIDE.md` for details.
+
+### Supporting Infrastructure (Optional)
+- **SSH Demo**: `cd scripts/ && ./demo-ssh-supporting.sh` (SSH capabilities)
+- **Ansible**: `ansible-playbook ansible/playbooks/vault-integration.yml`
+
 ### Prerequisites
 
 - HashiCorp Vault (1.15.2+)
@@ -84,6 +105,28 @@ open http://localhost:3020
 - **1.13-1.16** Revocation and CRL management
 - **1.17** Cleanup and summary
 
+### Phase 2: Supporting Infrastructure (SSH Engine)
+This phase provides supporting SSH infrastructure integrated into the main Terraform configuration:
+
+- **SSH Certificate Authority**: Centralized SSH key management (in `terraform/ssh.tf`)
+- **Ansible Integration**: Automated VM configuration using Vault SSH certificates
+- **Vault Agent Support**: Automatic certificate lifecycle management
+- **Zero Long-lived Keys**: All SSH access via temporary certificates
+
+**Supporting Infrastructure:**
+```bash
+# Single terraform apply now deploys both PKI + SSH
+cd terraform/ && terraform apply
+
+# Optional: Run SSH supporting demo
+cd ../scripts/ && ./demo-ssh-supporting.sh
+
+# Ansible automation example
+ansible-playbook -i ansible/inventory/hosts.yml ansible/playbooks/vault-integration.yml
+```
+
+*Note: SSH engine is integrated into main Terraform and serves as supporting infrastructure for Ansible automation.*
+
 ## 🎨 Visual Components
 
 ### Traditional vs. Modern Workflow Comparison
@@ -108,19 +151,26 @@ The demo includes visual representations showing:
 
 ```
 vault-pki-demo/
-├── terraform/           # Infrastructure as Code
+├── terraform/           # Complete Infrastructure as Code
 │   ├── pki.tf          # PKI secrets engine setup
+│   ├── ssh.tf          # SSH secrets engine setup
 │   ├── auth_approle.tf # AppRole authentication
-│   └── outputs.tf      # Configuration outputs
-├── scripts/            # CLI demonstration
-│   └── demo-magic-vault-pki.sh
-├── container/          # Web interface
+│   ├── policy.tf       # PKI + SSH policies
+│   ├── outputs.tf      # Configuration outputs
+│   └── SSH-README.md   # SSH engine documentation
+├── scripts/            # Demonstration scripts
+│   ├── demo-magic-vault-pki.sh     # Main 17-step PKI demo
+│   └── demo-ssh-supporting.sh      # Supporting SSH demo
+├── container/          # Interactive web interface
 │   ├── app.js         # Express server with 17 demo steps
 │   ├── web/
 │   │   ├── templates/ # EJS templates with Vault branding
 │   │   └── static/    # CSS, JS, and workflow diagrams
 │   └── docker-compose.yml
-├── ansible/           # Configuration management
+├── ansible/           # Supporting: Configuration management
+│   ├── playbooks/     # VM configuration playbooks
+│   └── inventory/     # Inventory with Vault SSH integration
+├── vault-agent/       # Supporting: Certificate lifecycle management
 ├── k8s/              # Kubernetes deployments
 └── docs/             # Additional documentation
 ```

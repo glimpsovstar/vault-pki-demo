@@ -23,12 +23,12 @@ resource "vault_pki_secret_backend_config_urls" "urls" {
 
 # Role for issuing leaf certs
 resource "vault_pki_secret_backend_role" "demo" {
-  backend           = vault_mount.pki.path
-  name              = var.pki_role_name
-  allowed_domains   = [var.common_domain]
-  allow_subdomains  = true
-  key_type          = "rsa"
-  key_bits          = 2048
-  max_ttl           = "${var.cert_max_ttl_h}h"
-  require_cn        = true
+  backend          = vault_mount.pki.path
+  name             = var.pki_role_name
+  allowed_domains  = [var.common_domain]
+  allow_subdomains = true
+  key_type         = "rsa"
+  key_bits         = 2048
+  max_ttl          = "${var.cert_max_ttl_h}h"
+  require_cn       = true
 }

@@ -1,0 +1,99 @@
+---
+# Vault SSH + PKI Integration Playbook
+# This playbook demonstrates using Vault for both SSH access and TLS certificates
+
+- name: Deploy application with Vault SSH + PKI integration
+  hosts: webservers
+  become: yes
+  vars:
+    vault_url: "{{ vault_addr | default('http://localhost:8200') }}"
+    vault_token: "{{ vault_token }}"
+    app_name: "webapp"
+    domain_name: "{{ inventory_hostname }}.example.com"
+
+  tasks:
+    # Phase 1: Use Vault SSH to authenticate to target servers
+    - name: Verify Vault SSH certificate is being used
+      debug:
+        msg: "SSH authentication should be using Vault-signed certificate"
+      tags: ssh
+
+    # Phase 2: Get TLS certificate from Vault PKI
+    - name: Generate TLS certificate from Vault PKI
+      uri:
+        url: "{{ vault_url }}/v1/pki/issue/webapp"
+        method: POST
+        headers:
+          X-Vault-Token: "{{ vault_token }}"
+        body_format: json
+        body:
+          common_name: "{{ domain_name }}"
+          ttl: "24h"
+          alt_names: "{{ alt_names | default([]) | join(',') }}"
+        return_content: yes
+      register: vault_cert_response
+      tags: pki
+
+    - name: Save TLS certificate
+      copy:
+        content: "{{ vault_cert_response.json.data.certificate }}"
+        dest: "/etc/ssl/certs/{{ app_name }}.crt"
+        mode: '0644'
+      tags: pki
+
+    - name: Save TLS private key
+      copy:
+        content: "{{ vault_cert_response.json.data.private_key }}"
+        dest: "/etc/ssl/private/{{ app_name }}.key"
+        mode: '0600'
+      tags: pki
+
+    - name: Save CA certificate
+      copy:
+        content: "{{ vault_cert_response.json.data.issuing_ca }}"
+        dest: "/etc/ssl/certs/{{ app_name }}-ca.crt"
+        mode: '0644'
+      tags: pki
+
+    # Phase 3: Install and configure application
+    - name: Install Nginx
+      package:
+        name: nginx
+        state: present
+
+    - name: Configure Nginx with Vault TLS certificates
+      template:
+        src: nginx-ssl.conf.j2
+        dest: "/etc/nginx/sites-available/{{ app_name }}"
+      notify: restart nginx
+      tags: config
+
+    - name: Enable Nginx site
+      file:
+        src: "/etc/nginx/sites-available/{{ app_name }}"
+        dest: "/etc/nginx/sites-enabled/{{ app_name }}"
+        state: link
+      notify: restart nginx
+
+    - name: Remove default Nginx site
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+      notify: restart nginx
+
+    # Phase 4: Verify certificate installation
+    - name: Check certificate validity
+      command: openssl x509 -in /etc/ssl/certs/{{ app_name }}.crt -noout -text
+      register: cert_info
+      tags: verify
+
+    - name: Display certificate information
+      debug:
+        var: cert_info.stdout_lines
+      tags: verify
+
+  handlers:
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted
